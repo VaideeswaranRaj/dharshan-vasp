@@ -623,7 +623,7 @@
             speech: "en-IN",
             locale: "en-IN",
             subtitle: "Artificial Intelligence Helping Robot — tap the mic to hear me",
-            hint: "Tap the blue microphone. Allow the mic. Wait for Speak now, then talk clearly and pause when finished.",
+            hint: "Tap the blue microphone. Allow the mic. Wait for Speak now, then talk. Pause when you finish.",
             speakNow: "Speak now",
             idle: "Tap the microphone to talk",
             listening: "Listening… speak clearly",
@@ -639,7 +639,7 @@
             greeting: "Hello. I am " + NAME + ", Artificial Intelligence Helping Robot. How can I help you?",
             placeholder: "Backup: type here if voice fails",
             tryLabel: "Try saying",
-            chips: ["Hello", "What is the time?", "What is today's date?", "Open YouTube", "Math add 10 and 20", "Who are you?"],
+            chips: ["Hello", "Give me some health tips", "What is the time?", "What is today's date?", "Open YouTube", "Math add 10 and 20"],
             micNeeded: "Microphone not enabled yet",
             micGranted: "Microphone allowed",
             micDenied: "Microphone blocked",
@@ -651,7 +651,7 @@
             audioCapture: "Chrome could not use the microphone. Close WhatsApp, Meet, or other mic apps, then try again.",
             noSpeech: "I did not catch words yet. Speak again.",
             speakLouder: "No words yet. After Speak now, talk a little louder in the selected language.",
-            hearing: "Heard something… keep speaking.",
+            hearing: "Heard you… keep talking, then pause.",
             noVoice: "Using the loudest available computer voice.",
             foot: "Use Chrome with internet. After the robot talks, wait for Speak now, then speak in the selected language.",
             who: "I am " + NAME + ", Artificial Intelligence Helping Robot. I can tell the time, open YouTube or Google, do maths, and talk in English, Tamil, and Hindi.",
@@ -665,6 +665,7 @@
             night: "Good night.",
             love: "Thank you. I am here to help.",
             ate: "I do not eat. I run on electricity.",
+            health: "Here are simple health tips. Drink plenty of water. Eat fruits and vegetables. Sleep well. Walk or play every day. Wash your hands. Go easy on junk food and too much screen time.",
         },
         ta: {
             speech: "ta-IN",
@@ -686,7 +687,7 @@
             greeting: "வணக்கம். நான் " + NAME + ", Artificial Intelligence Helping Robot. உங்களுக்கு எப்படி உதவட்டும்?",
             placeholder: "குரல் பிடிக்கவில்லை என்றால் இங்கே எழுதுங்கள்",
             tryLabel: "இப்படி சொல்லுங்கள்",
-            chips: ["வணக்கம்", "நேரம் என்ன?", "இன்றைய தேதி என்ன?", "YouTube திற", "10 கூட்டு 20", "நீ யார்?"],
+            chips: ["வணக்கம்", "ஆரோக்கிய குறிப்புகள்", "நேரம் என்ன?", "இன்றைய தேதி என்ன?", "YouTube திற", "10 கூட்டு 20"],
             micNeeded: "மைக் இன்னும் அனுமதிக்கவில்லை",
             micGranted: "மைக் அனுமதிக்கப்பட்டது",
             micDenied: "மைக் தடுக்கப்பட்டது",
@@ -712,6 +713,7 @@
             night: "இரவு வணக்கம்.",
             love: "நன்றி.",
             ate: "எனக்கு உணவு வேண்டாம்.",
+            health: "சில ஆரோக்கிய குறிப்புகள். தினமும் தண்ணீர் குடியுங்கள். பழங்கள் காய்கறிகள் சாப்பிடுங்கள். நன்றாக தூங்குங்கள். நடவுங்கள் அல்லது விளையாடுங்கள். கைகளை கழுவுங்கள். ஜங்க் உணவை குறைக்கவும்.",
         },
         hi: {
             speech: "hi-IN",
@@ -733,7 +735,7 @@
             greeting: "नमस्ते। मैं " + NAME + ", Artificial Intelligence Helping Robot हूँ। मैं आपकी कैसे मदद करूँ?",
             placeholder: "आवाज़ न चले तो यहाँ लिखें",
             tryLabel: "ऐसा कहें",
-            chips: ["नमस्ते", "समय क्या है?", "आज की तारीख?", "YouTube खोलो", "10 जोड़ 20", "तुम कौन हो?"],
+            chips: ["नमस्ते", "स्वास्थ्य सुझाव", "समय क्या है?", "आज की तारीख?", "YouTube खोलो", "10 जोड़ 20"],
             micNeeded: "माइक अभी अनुमति नहीं",
             micGranted: "माइक अनुमति मिली",
             micDenied: "माइक बंद है",
@@ -759,6 +761,7 @@
             night: "शुभ रात्रि।",
             love: "धन्यवाद।",
             ate: "मुझे खाने की ज़रूरत नहीं।",
+            health: "कुछ आसान स्वास्थ्य सुझाव। रोज़ पानी पिएँ। फल और सब्ज़ियाँ खाएँ। अच्छी नींद लें। रोज़ थोड़ा चलें या खेलें। हाथ धोएँ। जंक फ़ूड कम करें।",
         },
     };
 
@@ -800,8 +803,10 @@
     let currentAudio = null;
     let recStarting = false;
     let lastHeard = "";
+    let carryHeard = "";
     let ignoreHeardUntil = 0;
     let captureRetries = 0;
+    let silenceTimer = 0;
 
     function stopSpeech() {
         if (window.speechSynthesis) window.speechSynthesis.cancel();
@@ -885,13 +890,13 @@
     function stopRec() {
         clearTimeout(restartTimer);
         clearTimeout(heardTimer);
+        clearTimeout(silenceTimer);
         recStarting = false;
         if (!rec) return;
         const current = rec;
         rec = null;
         try { current.onend = null; current.onerror = null; current.onresult = null; } catch (e) { /* ignore */ }
         try { current.stop(); } catch (e) { /* ignore */ }
-        try { current.abort(); } catch (e) { /* ignore */ }
     }
 
     async function ensureMicPermission() {
@@ -929,15 +934,50 @@
         return n.includes("artificialintelligence") || n.includes("helpingrobot");
     }
 
+    function mergeTranscript(prev, next) {
+        const a = String(prev || "").replace(/\s+/g, " ").trim();
+        const b = String(next || "").replace(/\s+/g, " ").trim();
+        if (!a) return b;
+        if (!b) return a;
+        if (a === b) return a;
+        if (b.indexOf(a) === 0) return b;
+        if (a.indexOf(b) === 0) return a;
+        if (a.indexOf(b) !== -1) return a;
+        if (b.indexOf(a) !== -1) return b;
+        const aWords = a.split(" ");
+        const bWords = b.split(" ");
+        const max = Math.min(aWords.length, bWords.length);
+        for (let i = max; i > 0; i--) {
+            if (aWords.slice(-i).join(" ").toLowerCase() === bWords.slice(0, i).join(" ").toLowerCase()) {
+                return aWords.concat(bWords.slice(i)).join(" ");
+            }
+        }
+        return a + " " + b;
+    }
+
+    function resetHeard() {
+        lastHeard = "";
+        carryHeard = "";
+        clearTimeout(silenceTimer);
+    }
+
     function commitHeard(text, myTurn) {
         const cleaned = String(text || "").replace(/\s+/g, " ").trim();
         if (!cleaned || shouldIgnoreHeard(cleaned)) return false;
         if (mode !== "listen" || turn !== myTurn) return false;
-        lastHeard = "";
+        resetHeard();
         mode = "busy";
         stopRec();
         handleUtterance(cleaned);
         return true;
+    }
+
+    function scheduleCommit(myTurn) {
+        clearTimeout(silenceTimer);
+        const wait = isMobile ? 900 : 700;
+        silenceTimer = setTimeout(() => {
+            if (mode === "listen" && turn === myTurn) commitHeard(lastHeard, myTurn);
+        }, wait);
     }
 
     function armHeardWatch(myTurn) {
@@ -950,9 +990,7 @@
     }
 
     function recognitionLang() {
-        const code = t().speech;
-        if (isMobile && lang === "en") return "en-IN";
-        return code;
+        return t().speech;
     }
 
     function startRecognizer(myTurn) {
@@ -967,9 +1005,9 @@
         rec = instance;
         recStarting = true;
         instance.lang = recognitionLang();
-        instance.continuous = !isMobile;
+        instance.continuous = true;
         instance.interimResults = true;
-        instance.maxAlternatives = 3;
+        instance.maxAlternatives = 1;
         instance.onstart = () => {
             recStarting = false;
             captureRetries = 0;
@@ -981,21 +1019,16 @@
         instance.onresult = (event) => {
             if (mode !== "listen" || turn !== myTurn) return;
             let combined = "";
-            let finals = "";
             for (let i = 0; i < event.results.length; i++) {
-                const piece = event.results[i][0].transcript;
-                combined += (combined && piece ? " " : "") + piece;
-                if (event.results[i].isFinal) finals += (finals && piece ? " " : "") + piece;
+                combined += event.results[i][0].transcript || "";
             }
             const live = combined.replace(/\s+/g, " ").trim();
             if (live && !shouldIgnoreHeard(live)) {
-                lastHeard = live;
-                setYou(live);
+                lastHeard = mergeTranscript(carryHeard, live);
+                setYou(lastHeard);
                 els.voiceNote.textContent = t().hearing;
                 clearTimeout(heardTimer);
-            }
-            if (!isMobile && finals.trim()) {
-                commitHeard(finals.trim(), myTurn);
+                scheduleCommit(myTurn);
             }
         };
         instance.onerror = (ev) => {
@@ -1028,14 +1061,14 @@
             if (rec === instance) rec = null;
             recStarting = false;
             if (mode !== "listen" || turn !== myTurn) return;
-            if (commitHeard(lastHeard, myTurn)) return;
-            restartTimer = setTimeout(() => startRecognizer(myTurn), isMobile ? 500 : 280);
+            if (lastHeard) carryHeard = lastHeard;
+            restartTimer = setTimeout(() => startRecognizer(myTurn), 120);
         };
         try { instance.start(); }
         catch (err) {
             recStarting = false;
             rec = null;
-            restartTimer = setTimeout(() => startRecognizer(myTurn), isMobile ? 600 : 400);
+            restartTimer = setTimeout(() => startRecognizer(myTurn), 250);
         }
     }
 
@@ -1049,7 +1082,7 @@
         mode = "listen";
         turn += 1;
         const myTurn = turn;
-        lastHeard = "";
+        resetHeard();
         captureRetries = 0;
         els.voiceNote.textContent = "";
         setYou("—");
@@ -1060,7 +1093,7 @@
             await speak(MIC_INTRO, { language: "en" });
             if (mode !== "listen" || turn !== myTurn) return;
             captureRetries = 0;
-            ignoreHeardUntil = Date.now() + (isMobile ? 800 : 200);
+            ignoreHeardUntil = Date.now() + (isMobile ? 400 : 150);
             await playbackGap();
             if (mode !== "listen" || turn !== myTurn) return;
             if (!rec) startRecognizer(myTurn);
@@ -1088,7 +1121,7 @@
     function userStop() {
         turn += 1;
         mode = "idle";
-        lastHeard = "";
+        resetHeard();
         recStarting = false;
         stopRec();
         stopSpeech();
@@ -1267,6 +1300,7 @@
         if (/(?:good night|இரவு வணக்கம்|शुभ रात्रि)/i.test(text)) return { reply: copy.night };
         if (/(?:i love you|நான் உன்னை காதலி|मुझे तुमसे प्यार)/i.test(text)) return { reply: copy.love };
         if (/(?:did you eat|சாப்பிட்டாயா|खाया क्या)/i.test(text)) return { reply: copy.ate };
+        if (/(?:health\s*tips?|healthy\s*tips?|stay healthy|be healthy|health advice|gimme some health|give me some health|ஆரோக்கிய|சுகாதார|स्वास्थ्य)/i.test(text)) return { reply: copy.health };
         return null;
     }
 
@@ -1310,8 +1344,8 @@
         if (mode === "idle") return;
         mode = "listen";
         turn += 1;
-        lastHeard = "";
-        ignoreHeardUntil = Date.now() + (isMobile ? 700 : 150);
+        resetHeard();
+        ignoreHeardUntil = Date.now() + (isMobile ? 400 : 150);
         startRecognizer(turn);
     }
 
