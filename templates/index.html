@@ -650,6 +650,7 @@
             network: "Chrome speech needs internet. Connect Wi-Fi and try again.",
             audioCapture: "Chrome could not use the microphone. Close WhatsApp, Meet, or other mic apps, then try again.",
             noSpeech: "I did not catch words yet. Speak again.",
+            unknown: "Sorry, I did not understand. Please ask another way.",
             speakLouder: "No words yet. After Speak now, talk a little louder in the selected language.",
             hearing: "Heard you… keep talking, then pause.",
             noVoice: "Using the loudest available computer voice.",
@@ -842,6 +843,7 @@
             network: "குரல் அங்கீகாரத்திற்கு இணையம் தேவை.",
             audioCapture: "மைக்கை பயன்படுத்த முடியவில்லை. மற்ற மைக் ஆப்ஸை மூடி மீண்டும் முயல்க.",
             noSpeech: "வார்த்தைகள் கிடைக்கவில்லை. மீண்டும் பேசுங்கள்.",
+            unknown: "மன்னிக்கவும், எனக்குப் புரியவில்லை. வேறு விதமாகக் கேளுங்கள்.",
             speakLouder: "இன்னும் வார்த்தை இல்லை. உரக்க, தமிழில் பேசுங்கள்.",
             hearing: "கேட்கிறது… தொடர்ந்து பேசுங்கள்.",
             noVoice: "கணினியில் உள்ள உரத்த குரலை பயன்படுத்துகிறேன்.",
@@ -1034,6 +1036,7 @@
             network: "आवाज़ पहचान के लिए इंटरनेट चाहिए.",
             audioCapture: "माइक इस्तेमाल नहीं हो पाया। दूसरे माइक ऐप बंद करके फिर कोशिश करें.",
             noSpeech: "शब्द नहीं मिले। फिर बोलें.",
+            unknown: "माफ़ कीजिए, मैं समझ नहीं पाया। कृपया दूसरे तरीके से पूछें।",
             speakLouder: "अभी शब्द नहीं आए। ज़ोर से हिंदी में बोलें.",
             hearing: "सुनाई दे रहा है… बोलते रहें.",
             noVoice: "सबसे तेज़ उपलब्ध आवाज़ इस्तेमाल हो रही है.",
@@ -1369,22 +1372,62 @@
     function mergeTranscript(prev, next) {
         const a = String(prev || "").replace(/\s+/g, " ").trim();
         const b = String(next || "").replace(/\s+/g, " ").trim();
-        if (!a) return b;
-        if (!b) return a;
-        if (a === b) return a;
-        if (b.indexOf(a) === 0) return b;
-        if (a.indexOf(b) === 0) return a;
-        if (a.indexOf(b) !== -1) return a;
-        if (b.indexOf(a) !== -1) return b;
+        if (!a) return collapseStutter(b);
+        if (!b) return collapseStutter(a);
+        if (a.toLowerCase() === b.toLowerCase()) return collapseStutter(a);
+        if (b.toLowerCase().indexOf(a.toLowerCase()) === 0) return collapseStutter(b);
+        if (a.toLowerCase().indexOf(b.toLowerCase()) === 0) return collapseStutter(a);
+        if (a.toLowerCase().indexOf(b.toLowerCase()) !== -1) return collapseStutter(a);
+        if (b.toLowerCase().indexOf(a.toLowerCase()) !== -1) return collapseStutter(b);
         const aWords = a.split(" ");
         const bWords = b.split(" ");
         const max = Math.min(aWords.length, bWords.length);
         for (let i = max; i > 0; i--) {
             if (aWords.slice(-i).join(" ").toLowerCase() === bWords.slice(0, i).join(" ").toLowerCase()) {
-                return aWords.concat(bWords.slice(i)).join(" ");
+                return collapseStutter(aWords.concat(bWords.slice(i)).join(" "));
             }
         }
-        return a + " " + b;
+        return collapseStutter(a + " " + b);
+    }
+
+    function collapseStutter(text) {
+        let s = String(text || "").replace(/\s+/g, " ").trim();
+        if (!s) return "";
+        const lower = s.toLowerCase();
+        const maxUnit = Math.min(28, Math.floor(s.length / 2));
+        for (let len = 4; len <= maxUnit; len++) {
+            const unit = lower.slice(0, len);
+            if (!/[a-z\u0b80-\u0bff\u0900-\u097f]/.test(unit)) continue;
+            let pos = 0;
+            let times = 0;
+            while (pos + len <= lower.length && lower.slice(pos, pos + len) === unit) {
+                pos += len;
+                times += 1;
+            }
+            if (times >= 2) {
+                const rest = s.slice(pos).replace(/^[\s,.-]+/, "").trim();
+                const head = s.slice(0, len).trim();
+                s = rest ? head + " " + rest : head;
+                break;
+            }
+        }
+        let words = s.replace(/\s+/g, " ").trim().split(" ");
+        const noDup = [];
+        for (let i = 0; i < words.length; i++) {
+            if (!noDup.length || noDup[noDup.length - 1].toLowerCase() !== words[i].toLowerCase()) {
+                noDup.push(words[i]);
+            }
+        }
+        words = noDup;
+        for (let n = 4; n >= 1; n--) {
+            while (words.length >= n * 2) {
+                const left = words.slice(0, n).join(" ").toLowerCase();
+                const right = words.slice(n, n * 2).join(" ").toLowerCase();
+                if (left === right) words = words.slice(n);
+                else break;
+            }
+        }
+        return words.join(" ").trim();
     }
 
     function resetHeard() {
@@ -1394,7 +1437,7 @@
     }
 
     function commitHeard(text, myTurn) {
-        const cleaned = String(text || "").replace(/\s+/g, " ").trim();
+        const cleaned = collapseStutter(String(text || "").replace(/\s+/g, " ").trim());
         if (!cleaned || shouldIgnoreHeard(cleaned)) return false;
         if (mode !== "listen" || turn !== myTurn) return false;
         resetHeard();
@@ -1452,11 +1495,11 @@
             if (mode !== "listen" || turn !== myTurn) return;
             let combined = "";
             for (let i = 0; i < event.results.length; i++) {
-                combined += event.results[i][0].transcript || "";
+                combined = mergeTranscript(combined, event.results[i][0].transcript || "");
             }
-            const live = combined.replace(/\s+/g, " ").trim();
+            const live = collapseStutter(combined);
             if (live && !shouldIgnoreHeard(live)) {
-                lastHeard = mergeTranscript(carryHeard, live);
+                lastHeard = collapseStutter(mergeTranscript(carryHeard, live));
                 setYou(lastHeard);
                 els.voiceNote.textContent = t().hearing;
                 clearTimeout(heardTimer);
@@ -1493,7 +1536,7 @@
             if (rec === instance) rec = null;
             recStarting = false;
             if (mode !== "listen" || turn !== myTurn) return;
-            if (lastHeard) carryHeard = lastHeard;
+            if (lastHeard) carryHeard = collapseStutter(lastHeard);
             restartTimer = setTimeout(() => startRecognizer(myTurn), 120);
         };
         try { instance.start(); }
@@ -1747,7 +1790,7 @@
             { re: /kural (on |about )?friend|நட்பு குறள்|मित्र.*कुरल/i, key: "kuralFriend" },
             { re: /why is thirukkural famous|திருக்குறள் புகழ்|तिरुक्कुरल प्रसिद्ध/i, key: "kuralWhy" },
             { re: /tell me (a |one )?kural|recite (a )?kural|ஒரு குறள்|एक कुरल सुना/i, key: "kuralTell" },
-            { re: /what is thirukkural|tirukkural|thirukkural|திருக்குறள்|तिरुक्कुरल/i, key: "kuralWhat" },
+            { re: /what is thirukkural|tirukkural|thirukkural|thirukural|tirukural|thiru kural|திருக்குறள்|तिरुक्कुरल/i, key: "kuralWhat" },
             { re: /siruvani|சிறுவாணி|सिरुवानी/i, key: "siruvani" },
             { re: /noyyal|நொய்யல்|नोय्यल/i, key: "noyyal" },
             { re: /wet grinder|உரல்கல்/i, key: "wetGrinder" },
@@ -1882,7 +1925,7 @@
     }
 
     async function handleUtterance(text) {
-        const cleaned = (text || "").trim();
+        const cleaned = collapseStutter((text || "").trim());
         if (!cleaned) {
             if (mode === "busy") {
                 mode = "listen";
@@ -1910,9 +1953,9 @@
                     body: JSON.stringify({ message: cleaned, language: lang }),
                 });
                 const data = await res.json();
-                reply = data.reply || t().noSpeech;
+                reply = data.reply || t().unknown;
             } catch (err) {
-                reply = t().noSpeech;
+                reply = t().unknown;
             }
         }
         setBot(reply, url);
