@@ -57,6 +57,7 @@ FALLBACK_MODELS = (
     "gemini-flash-latest",
 )
 _working_model: str | None = None
+_gemini_disabled = False
 
 SYSTEM_PROMPT = """You are AIHR, Artificial Intelligence Helping Robot, a friendly school talking robot.
 Reply in the language given by the language code:
@@ -73,11 +74,6 @@ MATH_PREFIX = {
     "hi": "परिणाम है",
 }
 
-OFFLINE_HELLO = {
-    "en": "Hello! I am AIHR, Artificial Intelligence Helping Robot. Add GEMINI_API_KEY on the server for full conversation.",
-    "ta": "வணக்கம்! நான் AIHR, Artificial Intelligence Helping Robot. முழு உரையாடலுக்கு சேவையில் GEMINI_API_KEY சேர்க்கவும்.",
-    "hi": "नमस्ते! मैं AIHR, Artificial Intelligence Helping Robot हूँ। पूरी बातचीत के लिए सर्वर पर GEMINI_API_KEY जोड़ें।",
-}
 
 WORD_MATH_PATTERNS = (
     (r"(?:math\s+)?add\s+(\d+(?:\.\d+)?)\s+and\s+(\d+(?:\.\d+)?)", lambda a, b: a + b),
@@ -207,20 +203,10 @@ def evaluate_math(expression: str, lang: str) -> str | None:
         return None
 
 
-LLM_ERROR = {
-    "en": "AIHR could not reach the language model. Try again.",
-    "ta": "AIHR மாதிரியை அணுக முடியவில்லை. மீண்டும் முயல்க.",
-    "hi": "AIHR भाषा मॉडल तक नहीं पहुँच सका। फिर कोशिश करें।",
-}
-KEY_ERROR = {
-    "en": "The Gemini API key is not valid. Put a new key in the .env file as GEMINI_API_KEY, then restart the app.",
-    "ta": "Gemini API விசை தவறானது. .env கோட்டில் புதிய GEMINI_API_KEY போட்டு, ஆப்பை மீண்டும் தொடங்கவும்.",
-    "hi": "Gemini API कुंजी सही नहीं है। .env में नई GEMINI_API_KEY डालकर ऐप फिर से चालू करें।",
-}
-QUOTA_ERROR = {
-    "en": "The Gemini quota is finished for now. Wait a little, then try again.",
-    "ta": "Gemini ஒதுக்கீடு தற்காலிகமாக முடிந்துவிட்டது. சிறிது நேரம் கழித்து முயல்க.",
-    "hi": "Gemini कोटा अभी खत्म है। थोड़ी देर बाद फिर कोशिश करें।",
+UNKNOWN = {
+    "en": "Sorry, I did not understand. Please ask another way.",
+    "ta": "மன்னிக்கவும், எனக்குப் புரியவில்லை. வேறு விதமாகக் கேளுங்கள்.",
+    "hi": "माफ़ कीजिए, मैं समझ नहीं पाया। कृपया दूसरे तरीके से पूछें।",
 }
 
 LOCAL_KNOWLEDGE = (
@@ -817,7 +803,7 @@ LOCAL_KNOWLEDGE = (
         },
     ),
     (
-        r"what is thirukkural|tirukkural|thirukkural|திருக்குறள்|तिरुक्कुरल",
+        r"what is thirukkural|tirukkural|thirukkural|thirukural|tirukural|thiru kural|திருக்குறள்|तिरुक्कुरल",
         {
             "en": "Thirukkural is a Tamil book of short couplets about good living, written by Thiruvalluvar.",
             "ta": "திருக்குறள் வள்ளுவர் எழுதிய தமிழ் நூல். அறம், பொருள், இன்பம் பற்றி சிறிய குறள்கள்.",
@@ -1471,9 +1457,9 @@ def _generate_rest(model: str, user_msg: str, lang: str) -> str:
 
 
 def ask_gemini(user_msg: str, lang: str) -> str:
-    global _working_model
-    if not GEMINI_API_KEY:
-        return OFFLINE_HELLO[lang]
+    global _working_model, _gemini_disabled
+    if _gemini_disabled or not GEMINI_API_KEY:
+        return UNKNOWN[lang]
 
     client = None
     try:
@@ -1494,26 +1480,18 @@ def ask_gemini(user_msg: str, lang: str) -> str:
                     _working_model = model
                     return text
             except GeminiAuthError:
+                _gemini_disabled = True
                 log.error("Gemini API key rejected")
-                known = local_knowledge(user_msg, lang)
-                if known:
-                    return known
-                return KEY_ERROR[lang]
+                return UNKNOWN[lang]
             except GeminiQuotaError:
                 log.error("Gemini quota exhausted")
-                known = local_knowledge(user_msg, lang)
-                if known:
-                    return known
-                return QUOTA_ERROR[lang]
+                return UNKNOWN[lang]
             except Exception as err:
                 last_err = err
                 log.warning("Gemini %s %s failed: %s", label, model, err)
 
     log.error("Gemini failed for %r: %s", user_msg[:80], last_err)
-    known = local_knowledge(user_msg, lang)
-    if known:
-        return known
-    return LLM_ERROR[lang]
+    return UNKNOWN[lang]
 
 
 app = Flask(
