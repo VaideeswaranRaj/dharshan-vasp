@@ -1,4 +1,4 @@
-"""dharshan-vasp — school voice assistant (English, Tamil, Hindi)."""
+"""RIHR — Artificial Intelligence Helping Robot (English, Tamil, Hindi)."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ SUPPORTED_LANGS = ("en", "ta", "hi")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
-SYSTEM_PROMPT = """You are dharshan-vasp, a friendly school talking robot.
+SYSTEM_PROMPT = """You are RIHR, Artificial Intelligence Helping Robot, a friendly school talking robot.
 Reply in the language given by the language code:
 - en = English
 - ta = Tamil (தமிழ்)
@@ -34,9 +34,9 @@ MATH_PREFIX = {
 }
 
 OFFLINE_HELLO = {
-    "en": "Hello! I am dharshan-vasp. Add GEMINI_API_KEY on the server for full conversation.",
-    "ta": "வணக்கம்! நான் dharshan-vasp. முழு உரையாடலுக்கு சேவையில் GEMINI_API_KEY சேர்க்கவும்.",
-    "hi": "नमस्ते! मैं dharshan-vasp हूँ। पूरी बातचीत के लिए सर्वर पर GEMINI_API_KEY जोड़ें।",
+    "en": "Hello! I am RIHR, Artificial Intelligence Helping Robot. Add GEMINI_API_KEY on the server for full conversation.",
+    "ta": "வணக்கம்! நான் RIHR, Artificial Intelligence Helping Robot. முழு உரையாடலுக்கு சேவையில் GEMINI_API_KEY சேர்க்கவும்.",
+    "hi": "नमस्ते! मैं RIHR, Artificial Intelligence Helping Robot हूँ। पूरी बातचीत के लिए सर्वर पर GEMINI_API_KEY जोड़ें।",
 }
 
 WORD_MATH_PATTERNS = (
@@ -183,9 +183,9 @@ def ask_gemini(user_msg: str, lang: str) -> str:
         return text or OFFLINE_HELLO[lang]
     except Exception:
         return {
-            "en": "dharshan-vasp could not reach the language model. Try again.",
-            "ta": "dharshan-vasp மாதிரியை அணுக முடியவில்லை. மீண்டும் முயல்க.",
-            "hi": "dharshan-vasp भाषा मॉडल तक नहीं पहुँच सका। फिर कोशिश करें।",
+            "en": "RIHR could not reach the language model. Try again.",
+            "ta": "RIHR மாதிரியை அணுக முடியவில்லை. மீண்டும் முயல்க.",
+            "hi": "RIHR भाषा मॉडल तक नहीं पहुँच सका। फिर कोशिश करें।",
         }[lang]
 
 
