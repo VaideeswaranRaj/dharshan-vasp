@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dharshan-vasp</title>
+    <title>RIHR</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@500;600;700&family=Noto+Sans+Tamil:wght@500;600;700&display=swap" rel="stylesheet">
@@ -528,8 +528,8 @@
     <div class="page">
         <header class="banner">
             <div>
-                <h1>dharshan-vasp</h1>
-                <p id="subtitle">School voice assistant — English, Tamil, Hindi</p>
+                <h1>RIHR</h1>
+                <p id="subtitle">Artificial Intelligence Helping Robot — English, Tamil, Hindi</p>
             </div>
             <span class="tag">School Project</span>
         </header>
@@ -612,12 +612,13 @@
 
 <script>
 (function () {
-    const NAME = "dharshan-vasp";
+    const NAME = "RIHR";
+    const MIC_INTRO = "Artificial intelligence helping robot";
     const LANGS = {
         en: {
             speech: "en-IN",
             locale: "en-IN",
-            subtitle: "Tap the mic, speak, and hear a loud reply",
+            subtitle: "Artificial Intelligence Helping Robot — tap the mic to hear me",
             hint: "Click the blue microphone. Allow the popup. Then speak.",
             speakNow: "Speak now",
             idle: "Tap the microphone to talk",
@@ -631,7 +632,7 @@
             send: "Send",
             you: "You said",
             bot: NAME + " replied",
-            greeting: "Hello. I am " + NAME + ". How can I help you?",
+            greeting: "Hello. I am " + NAME + ", Artificial Intelligence Helping Robot. How can I help you?",
             placeholder: "Backup: type here if voice fails",
             tryLabel: "Try saying",
             chips: ["Hello", "What is the time?", "What is today's date?", "Open YouTube", "Math add 10 and 20", "Who are you?"],
@@ -649,7 +650,7 @@
             hearing: "Heard something… keep speaking.",
             noVoice: "Using the loudest available computer voice.",
             foot: "Use Google Chrome. Turn computer volume up. Select the language, then speak in that language.",
-            who: "I am " + NAME + ", a school talking robot. I can tell the time, open YouTube or Google, do maths, and talk in English, Tamil, and Hindi.",
+            who: "I am " + NAME + ", Artificial Intelligence Helping Robot. I can tell the time, open YouTube or Google, do maths, and talk in English, Tamil, and Hindi.",
             canDo: "Ask the time or date, say open YouTube, do maths, or just talk to me.",
             opened: (name) => "Opening " + name + ".",
             searching: (q) => "Searching for " + q + ".",
@@ -678,7 +679,7 @@
             send: "அனுப்பு",
             you: "நீங்கள் சொன்னது",
             bot: NAME + " பதில்",
-            greeting: "வணக்கம். நான் " + NAME + ". உங்களுக்கு எப்படி உதவட்டும்?",
+            greeting: "வணக்கம். நான் " + NAME + ", Artificial Intelligence Helping Robot. உங்களுக்கு எப்படி உதவட்டும்?",
             placeholder: "குரல் பிடிக்கவில்லை என்றால் இங்கே எழுதுங்கள்",
             tryLabel: "இப்படி சொல்லுங்கள்",
             chips: ["வணக்கம்", "நேரம் என்ன?", "இன்றைய தேதி என்ன?", "YouTube திற", "10 கூட்டு 20", "நீ யார்?"],
@@ -696,7 +697,7 @@
             hearing: "கேட்கிறது… தொடர்ந்து பேசுங்கள்.",
             noVoice: "கணினியில் உள்ள உரத்த குரலை பயன்படுத்துகிறேன்.",
             foot: "Chrome பயன்படுத்துங்கள். ஸ்பீக்கர் ஒலியை உயர்த்துங்கள்.",
-            who: "நான் " + NAME + ". நேரம், YouTube, கணக்கு, உரையாடல்.",
+            who: "நான் " + NAME + ", Artificial Intelligence Helping Robot. நேரம், YouTube, கணக்கு, உரையாடல்.",
             canDo: "நேரம், தேதி, YouTube, கணக்கு அல்லது பேச்சு.",
             opened: (name) => name + " திறக்கிறேன்.",
             searching: (q) => q + " தேடுகிறேன்.",
@@ -725,7 +726,7 @@
             send: "भेजें",
             you: "आपने कहा",
             bot: NAME + " का जवाब",
-            greeting: "नमस्ते। मैं " + NAME + " हूँ। मैं आपकी कैसे मदद करूँ?",
+            greeting: "नमस्ते। मैं " + NAME + ", Artificial Intelligence Helping Robot हूँ। मैं आपकी कैसे मदद करूँ?",
             placeholder: "आवाज़ न चले तो यहाँ लिखें",
             tryLabel: "ऐसा कहें",
             chips: ["नमस्ते", "समय क्या है?", "आज की तारीख?", "YouTube खोलो", "10 जोड़ 20", "तुम कौन हो?"],
@@ -743,7 +744,7 @@
             hearing: "सुनाई दे रहा है… बोलते रहें.",
             noVoice: "सबसे तेज़ उपलब्ध आवाज़ इस्तेमाल हो रही है.",
             foot: "Chrome इस्तेमाल करें। स्पीकर आवाज़ बढ़ाएँ.",
-            who: "मैं " + NAME + " हूँ। समय, YouTube, गणित, बातचीत।",
+            who: "मैं " + NAME + ", Artificial Intelligence Helping Robot हूँ। समय, YouTube, गणित, बातचीत।",
             canDo: "समय, तारीख, YouTube, गणित, या बातचीत।",
             opened: (name) => name + " खोल रहा हूँ।",
             searching: (q) => q + " खोज रहा हूँ।",
@@ -978,11 +979,6 @@
         catch (err) { restartTimer = setTimeout(() => startRecognizer(myTurn), 400); }
     }
 
-    function assistantReplyText() {
-        const text = (els.botText.textContent || "").replace(/\s+/g, " ").trim();
-        return text && text !== "—" ? text : t().greeting;
-    }
-
     async function startListening() {
         if (mode === "listen") {
             userStop();
@@ -998,7 +994,8 @@
         try {
             await ensureMicPermission();
             if (mode !== "listen" || turn !== myTurn) return;
-            await speak(assistantReplyText());
+            setBot(MIC_INTRO);
+            await speak(MIC_INTRO, { language: "en" });
             if (mode !== "listen" || turn !== myTurn) return;
             await sleep(350);
             startRecognizer(myTurn);
@@ -1037,8 +1034,9 @@
         return voices;
     }
 
-    function pickVoice(voices) {
-        const wanted = t().speech.replace("_", "-").toLowerCase();
+    function pickVoice(voices, speechLang) {
+        const copy = LANGS[speechLang] || t();
+        const wanted = copy.speech.replace("_", "-").toLowerCase();
         const prefix = wanted.slice(0, 2);
         const langOf = (v) => (v.lang || "").replace("_", "-").toLowerCase();
         return (
@@ -1050,7 +1048,8 @@
         );
     }
 
-    function speakWithBrowser(text) {
+    function speakWithBrowser(text, speechLang) {
+        speechLang = speechLang || lang;
         return new Promise(async (resolve) => {
             if (!("speechSynthesis" in window) || !text) {
                 resolve();
@@ -1059,12 +1058,12 @@
             const voices = await waitForVoices();
             const utter = new SpeechSynthesisUtterance(text);
             utter.volume = 1;
-            utter.rate = lang === "ta" ? 0.72 : 0.84;
+            utter.rate = speechLang === "ta" ? 0.72 : 0.84;
             utter.pitch = 1;
-            utter.lang = t().speech;
-            const voice = pickVoice(voices);
+            utter.lang = (LANGS[speechLang] || t()).speech;
+            const voice = pickVoice(voices, speechLang);
             const voiceLang = voice ? (voice.lang || "").toLowerCase() : "";
-            if (voice && (lang === "en" || voiceLang.startsWith(lang))) {
+            if (voice && (speechLang === "en" || voiceLang.startsWith(speechLang))) {
                 utter.voice = voice;
             }
             const keepAlive = setInterval(() => {
@@ -1081,12 +1080,12 @@
         });
     }
 
-    function speakWithServer(text) {
+    function speakWithServer(text, speechLang) {
         return new Promise(async (resolve, reject) => {
             const res = await fetch("/speak", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: text, language: lang }),
+                body: JSON.stringify({ text: text, language: speechLang || lang }),
             });
             if (!res.ok) {
                 reject(new Error("tts"));
@@ -1119,6 +1118,7 @@
 
     function speak(text, opts) {
         opts = opts || {};
+        const speechLang = opts.language || lang;
         return (async () => {
             const cleaned = String(text || "").replace(/\s+/g, " ").trim();
             if (!cleaned) return;
@@ -1126,9 +1126,9 @@
             if (!opts.cue) setState("speaking");
             els.robot.classList.add("talking");
             try {
-                await speakWithServer(cleaned);
+                await speakWithServer(cleaned, speechLang);
             } catch (err) {
-                await speakWithBrowser(cleaned);
+                await speakWithBrowser(cleaned, speechLang);
             } finally {
                 els.robot.classList.remove("talking");
             }
