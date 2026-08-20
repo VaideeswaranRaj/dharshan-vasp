@@ -223,6 +223,27 @@ QUOTA_ERROR = {
     "hi": "Gemini कोटा अभी खत्म है। थोड़ी देर बाद फिर कोशिश करें।",
 }
 
+LOCAL_KNOWLEDGE = (
+    (
+        r"health\s*tips?|healthy\s*tips?|stay healthy|be healthy|health advice|gimme some health|give me some health|ஆரோக்கிய|சுகாதார|स्वास्थ्य",
+        {
+            "en": "Here are simple health tips. Drink plenty of water. Eat fruits and vegetables. Sleep well. Walk or play every day. Wash your hands. Go easy on junk food and too much screen time.",
+            "ta": "சில ஆரோக்கிய குறிப்புகள். தினமும் தண்ணீர் குடியுங்கள். பழங்கள் காய்கறிகள் சாப்பிடுங்கள். நன்றாக தூங்குங்கள். நடவுங்கள் அல்லது விளையாடுங்கள். கைகளை கழுவுங்கள். ஜங்க் உணவை குறைக்கவும்.",
+            "hi": "कुछ आसान स्वास्थ्य सुझाव। रोज़ पानी पिएँ। फल और सब्ज़ियाँ खाएँ। अच्छी नींद लें। रोज़ थोड़ा चलें या खेलें। हाथ धोएँ। जंक फ़ूड कम करें।",
+        },
+    ),
+)
+
+
+def local_knowledge(user_msg: str, lang: str) -> str | None:
+    text = user_msg.strip()
+    if not text:
+        return None
+    for pattern, replies in LOCAL_KNOWLEDGE:
+        if re.search(pattern, text, re.I):
+            return replies.get(lang) or replies["en"]
+    return None
+
 
 class GeminiAuthError(Exception):
     pass
@@ -245,6 +266,8 @@ def _models_to_try() -> list[str]:
 def _classify_gemini_error(err: Exception, detail: str = "") -> Exception:
     text = f"{err} {detail}".lower()
     if "api_key_invalid" in text or "api key not valid" in text or "invalid api key" in text:
+        return GeminiAuthError("invalid api key")
+    if "unauthenticated" in text or "access_token_type_unsupported" in text or "401" in text:
         return GeminiAuthError("invalid api key")
     if "resource_exhausted" in text or "resource has been exhausted" in text or "429" in text:
         return GeminiQuotaError("quota exhausted")
@@ -352,15 +375,24 @@ def ask_gemini(user_msg: str, lang: str) -> str:
                     return text
             except GeminiAuthError:
                 log.error("Gemini API key rejected")
+                known = local_knowledge(user_msg, lang)
+                if known:
+                    return known
                 return KEY_ERROR[lang]
             except GeminiQuotaError:
                 log.error("Gemini quota exhausted")
+                known = local_knowledge(user_msg, lang)
+                if known:
+                    return known
                 return QUOTA_ERROR[lang]
             except Exception as err:
                 last_err = err
                 log.warning("Gemini %s %s failed: %s", label, model, err)
 
     log.error("Gemini failed for %r: %s", user_msg[:80], last_err)
+    known = local_knowledge(user_msg, lang)
+    if known:
+        return known
     return LLM_ERROR[lang]
 
 
@@ -406,6 +438,10 @@ def chat():
     math_reply = evaluate_math(user_msg, lang)
     if math_reply:
         return jsonify({"reply": math_reply, "source": "math"})
+
+    known = local_knowledge(user_msg, lang)
+    if known:
+        return jsonify({"reply": known, "source": "local"})
 
     return jsonify({"reply": ask_gemini(user_msg, lang), "source": "llm"})
 
