@@ -189,12 +189,20 @@ def ask_gemini(user_msg: str, lang: str) -> str:
         }[lang]
 
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates"),
+)
 
 
 @app.get("/")
 def home():
     return render_template("index.html")
+
+
+@app.get("/favicon.ico")
+def favicon():
+    return ("", 204)
 
 
 @app.get("/health")
