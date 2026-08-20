@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dharshan-vasp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+Devanagari:wght@500;600;700&family=Noto+Sans+Tamil:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #1e3a8a;
+            --blue: #2563eb;
+            --paper: #fffdf8;
+            --ink: #1a1633;
+            --muted: #4b5563;
+            --listen: #dc2626;
+            --ok: #047857;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: "Plus Jakarta Sans", "Noto Sans Tamil", "Noto Sans Devanagari", system-ui, sans-serif;
+            color: var(--ink);
+            background: #87ceeb;
+        }
+
+        .scene {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+            background: linear-gradient(#7ec8e3 0%, #b8e0f0 42%, #d9f99d 42.2%, #86efac 70%, #4ade80 100%);
+        }
+
+        .sun {
+            position: absolute;
+            top: 28px;
+            right: 8%;
+            width: 86px;
+            height: 86px;
+            border-radius: 50%;
+            background: #fde047;
+            box-shadow: 0 0 0 12px rgba(253, 224, 71, 0.35);
+            animation: sun-pulse 4s ease-in-out infinite;
+        }
+
+        .cloud {
+            position: absolute;
+            background: #fff;
+            border-radius: 40px;
+            opacity: 0.92;
+            animation: drift linear infinite;
+        }
+        .cloud:before, .cloud:after {
+            content: "";
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+        }
+        .c1 { width: 120px; height: 36px; top: 50px; left: -160px; animation-duration: 38s; }
+        .c1:before { width: 50px; height: 50px; top: -24px; left: 18px; }
+        .c1:after { width: 70px; height: 70px; top: -34px; left: 48px; }
+        .c2 { width: 90px; height: 28px; top: 110px; left: -160px; animation-duration: 52s; animation-delay: -12s; }
+        .c2:before { width: 40px; height: 40px; top: -18px; left: 12px; }
+        .c2:after { width: 52px; height: 52px; top: -26px; left: 36px; }
+        .c3 { width: 140px; height: 38px; top: 70px; left: -180px; animation-duration: 44s; animation-delay: -22s; }
+        .c3:before { width: 56px; height: 56px; top: -26px; left: 20px; }
+        .c3:after { width: 72px; height: 72px; top: -36px; left: 58px; }
+
+        .school {
+            position: absolute;
+            left: 50%;
+            bottom: 34%;
+            width: 220px;
+            height: 130px;
+            margin-left: -110px;
+            background: #fef3c7;
+            border: 4px solid #92400e;
+            border-bottom: 0;
+            border-radius: 8px 8px 0 0;
+        }
+        .school .roof {
+            position: absolute;
+            left: -18px;
+            top: -48px;
+            width: 250px;
+            height: 0;
+            border-left: 125px solid transparent;
+            border-right: 125px solid transparent;
+            border-bottom: 48px solid #b91c1c;
+        }
+        .school .door {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: 36px;
+            height: 52px;
+            margin-left: -18px;
+            background: #92400e;
+            border-radius: 18px 18px 0 0;
+        }
+        .school .win {
+            position: absolute;
+            top: 22px;
+            width: 28px;
+            height: 28px;
+            background: #38bdf8;
+            border: 3px solid #92400e;
+            animation: window-blink 3s ease-in-out infinite;
+        }
+        .w1 { left: 22px; }
+        .w2 { right: 22px; animation-delay: -1.4s; }
+
+        .float-item {
+            position: absolute;
+            animation: float-y ease-in-out infinite;
+        }
+        .book { width: 34px; height: 44px; border-radius: 3px; }
+        .b1 { background: #ef4444; top: 18%; left: 8%; animation-duration: 3.4s; }
+        .b2 { background: #3b82f6; top: 24%; left: 78%; animation-duration: 4.1s; animation-delay: -1s; }
+        .b3 { background: #22c55e; top: 12%; left: 62%; animation-duration: 3.8s; animation-delay: -0.6s; }
+        .note {
+            width: 40px;
+            height: 50px;
+            background: repeating-linear-gradient(#fff 0 8px, #93c5fd 8px 9px);
+            border: 2px solid #64748b;
+            top: 30%;
+            left: 18%;
+            animation-duration: 5s;
+            transform: rotate(-12deg);
+        }
+        .note2 {
+            width: 36px;
+            height: 46px;
+            background: repeating-linear-gradient(#fff 0 8px, #fca5a5 8px 9px);
+            border: 2px solid #64748b;
+            top: 16%;
+            left: 88%;
+            animation-duration: 4.4s;
+            transform: rotate(10deg);
+        }
+        .bag {
+            width: 36px;
+            height: 42px;
+            background: #7c3aed;
+            border-radius: 8px 8px 10px 10px;
+            top: 28%;
+            left: 42%;
+            animation-duration: 3.6s;
+        }
+        .bag:before {
+            content: "";
+            position: absolute;
+            left: 8px;
+            top: -8px;
+            width: 20px;
+            height: 12px;
+            border: 4px solid #5b21b6;
+            border-bottom: 0;
+            border-radius: 10px 10px 0 0;
+        }
+        .pencil {
+            width: 8px;
+            height: 48px;
+            background: linear-gradient(#facc15 70%, #f97316 70% 82%, #e5e7eb 82%);
+            border-radius: 2px;
+            top: 22%;
+            left: 52%;
+            animation-duration: 2.8s;
+            transform: rotate(25deg);
+        }
+        .plane {
+            position: absolute;
+            top: 20%;
+            left: -80px;
+            width: 0;
+            height: 0;
+            border-left: 28px solid #fff;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            animation: plane-fly 16s linear infinite;
+        }
+
+        .walker {
+            position: absolute;
+            bottom: 12%;
+            width: 28px;
+            animation: walk-across linear infinite;
+        }
+        .walker .head {
+            width: 16px;
+            height: 16px;
+            margin: 0 auto;
+            background: #fbbf24;
+            border-radius: 50%;
+        }
+        .walker .torso {
+            width: 18px;
+            height: 22px;
+            margin: 2px auto 0;
+            border-radius: 4px;
+        }
+        .walker .pack {
+            position: absolute;
+            right: 0;
+            top: 18px;
+            width: 10px;
+            height: 14px;
+            background: #b45309;
+            border-radius: 2px;
+        }
+        .walker .legs {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+        }
+        .walker .leg {
+            width: 5px;
+            height: 16px;
+            background: #1e3a8a;
+            animation: stride 0.45s linear infinite;
+        }
+        .walker .leg.r { animation-delay: -0.22s; }
+        .st1 { left: -40px; animation-duration: 18s; }
+        .st1 .torso { background: #2563eb; }
+        .st2 { left: -40px; animation-duration: 22s; animation-delay: -7s; }
+        .st2 .torso { background: #dc2626; }
+        .st3 { left: -40px; animation-duration: 16s; animation-delay: -11s; }
+        .st3 .torso { background: #16a34a; }
+        .st4 { left: -40px; animation-duration: 26s; animation-delay: -3s; }
+        .st4 .torso { background: #db2777; }
+
+        .grass {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 12%;
+            background: repeating-linear-gradient(90deg, #22c55e 0 14px, #16a34a 14px 28px);
+        }
+
+        @keyframes drift { from { transform: translateX(0); } to { transform: translateX(120vw); } }
+        @keyframes sun-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+        @keyframes window-blink {
+            0%, 80%, 100% { background: #38bdf8; }
+            90% { background: #fef08a; }
+        }
+        @keyframes float-y {
+            0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+            50% { transform: translateY(-18px) rotate(calc(var(--r, 0deg) + 8deg)); }
+        }
+        @keyframes plane-fly {
+            0% { transform: translate(0, 0) rotate(-8deg); }
+            100% { transform: translate(110vw, 40px) rotate(6deg); }
+        }
+        @keyframes walk-across {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(110vw); }
+        }
+        @keyframes stride {
+            0%, 100% { transform: rotate(18deg); }
+            50% { transform: rotate(-18deg); }
+        }
+
+        .page {
+            position: relative;
+            z-index: 2;
+            width: min(860px, calc(100% - 24px));
+            margin: 0 auto;
+            padding: 18px 0 36px;
+        }
+
+        .banner {
+            background: rgba(30, 58, 138, 0.94);
+            color: #fff;
+            border-radius: 20px;
+            padding: 16px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            backdrop-filter: blur(6px);
+        }
+        .banner h1 { font-size: 1.28rem; }
+        .banner p { font-size: 0.84rem; opacity: 0.92; margin-top: 3px; }
+        .tag {
+            background: #f59e0b;
+            color: #1a1633;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        .toolbar {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .langs, .mic-badge {
+            background: var(--paper);
+            border: 2px solid #fde68a;
+            border-radius: 999px;
+        }
+        .langs { display: flex; padding: 4px; }
+        .langs button {
+            border: 0;
+            background: transparent;
+            font: inherit;
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: var(--muted);
+            padding: 8px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+        .langs button[aria-pressed="true"] { background: var(--blue); color: #fff; }
+
+        .mic-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--muted);
+        }
+        .mic-dot { width: 9px; height: 9px; border-radius: 50%; background: #94a3b8; }
+        .mic-badge[data-mic="granted"] { color: var(--ok); }
+        .mic-badge[data-mic="granted"] .mic-dot { background: var(--ok); }
+        .mic-badge[data-mic="denied"], .mic-badge[data-mic="listening"] { color: var(--listen); }
+        .mic-badge[data-mic="denied"] .mic-dot, .mic-badge[data-mic="listening"] .mic-dot { background: var(--listen); }
+
+        .stage {
+            margin-top: 14px;
+            background: rgba(255, 253, 248, 0.94);
+            border: 3px solid #fbbf24;
+            border-radius: 28px;
+            padding: 18px 16px 16px;
+            text-align: center;
+        }
+
+        .robot-wrap { height: 168px; display: grid; place-items: center; }
+        .robot { width: 120px; animation: robot-bob 2s ease-in-out infinite; }
+        .robot .arm-l { transform-origin: 28px 78px; animation: wave-l 1.3s ease-in-out infinite; }
+        .robot .arm-r { transform-origin: 92px 78px; animation: wave-r 1.3s ease-in-out infinite; }
+        .robot .antenna { transform-origin: 60px 18px; animation: antenna 1.1s ease-in-out infinite; }
+        .robot .lid { transform-origin: 44px 54px; animation: blink 3.2s infinite; }
+        .robot .mouth { transform-origin: 60px 78px; }
+        .robot.talking { animation-duration: 0.45s; }
+        .robot.talking .mouth { animation: talk 0.22s linear infinite; }
+
+        @keyframes robot-bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes wave-l {
+            0%, 100% { transform: rotate(12deg); }
+            50% { transform: rotate(-28deg); }
+        }
+        @keyframes wave-r {
+            0%, 100% { transform: rotate(-8deg); }
+            50% { transform: rotate(22deg); }
+        }
+        @keyframes antenna {
+            0%, 100% { transform: rotate(-6deg); }
+            50% { transform: rotate(8deg); }
+        }
+        @keyframes blink {
+            0%, 92%, 100% { transform: scaleY(1); }
+            96% { transform: scaleY(0.08); }
+        }
+        @keyframes talk {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.55); }
+        }
+
+        .mic-btn {
+            width: 92px;
+            height: 92px;
+            border-radius: 50%;
+            border: 0;
+            cursor: pointer;
+            background: var(--blue);
+            color: #fff;
+            display: inline-grid;
+            place-items: center;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.38);
+            margin-top: 4px;
+        }
+        .mic-btn svg { width: 38px; height: 38px; }
+        .stage[data-state="listening"] .mic-btn {
+            background: var(--listen);
+            animation: pulse 1.1s ease-in-out infinite;
+        }
+        .stage[data-state="thinking"] .mic-btn { background: #7c3aed; }
+        .stage[data-state="speaking"] .mic-btn { background: #0f766e; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.07); }
+        }
+
+        .status { margin-top: 10px; font-size: 1.2rem; font-weight: 800; }
+        .hint { margin-top: 4px; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+
+        .controls { margin-top: 12px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .controls button {
+            border: 2px solid #fde68a;
+            background: #fff;
+            font: inherit;
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 9px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .controls .stop { background: #fee2e2; border-color: #fecaca; color: #991b1b; }
+        .controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .cards { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .bubble {
+            background: rgba(255, 253, 248, 0.95);
+            border: 2px solid #fde68a;
+            border-radius: 18px;
+            padding: 14px;
+            min-height: 120px;
+        }
+        .bubble h2 {
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--blue);
+            margin-bottom: 6px;
+        }
+        .bubble .txt { font-size: 1.08rem; font-weight: 600; line-height: 1.45; word-break: break-word; }
+        .bubble a { color: var(--blue); }
+
+        .chips-wrap { margin-top: 12px; }
+        .chips-wrap p {
+            font-size: 0.74rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+        }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chips button {
+            border: 0;
+            background: #fef3c7;
+            color: #92400e;
+            font: inherit;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 8px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+
+        .type-row { margin-top: 12px; display: flex; gap: 8px; }
+        .type-row input {
+            flex: 1;
+            border: 2px solid #fde68a;
+            border-radius: 12px;
+            padding: 11px 12px;
+            font: inherit;
+        }
+        .type-row button {
+            border: 0;
+            background: var(--navy);
+            color: #fff;
+            font: inherit;
+            font-weight: 700;
+            padding: 0 14px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .note-line { margin-top: 10px; font-size: 0.82rem; color: #1e3a8a; min-height: 1.2em; font-weight: 600; }
+        .foot { margin-top: 12px; text-align: center; font-size: 0.78rem; color: #1e3a8a; }
+
+        @media (max-width: 700px) {
+            .cards { grid-template-columns: 1fr; }
+            .school { transform: scale(0.8); bottom: 36%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scene" aria-hidden="true">
+        <div class="sun"></div>
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+        <div class="cloud c3"></div>
+        <div class="school">
+            <div class="roof"></div>
+            <div class="door"></div>
+            <div class="win w1"></div>
+            <div class="win w2"></div>
+        </div>
+        <div class="float-item book b1"></div>
+        <div class="float-item book b2"></div>
+        <div class="float-item book b3"></div>
+        <div class="float-item note"></div>
+        <div class="float-item note2"></div>
+        <div class="float-item bag"></div>
+        <div class="float-item pencil"></div>
+        <div class="plane"></div>
+        <div class="walker st1"><div class="head"></div><div class="torso"></div><div class="pack"></div><div class="legs"><div class="leg"></div><div class="leg r"></div></div></div>
+        <div class="walker st2"><div class="head"></div><div class="torso"></div><div class="pack"></div><div class="legs"><div class="leg"></div><div class="leg r"></div></div></div>
+        <div class="walker st3"><div class="head"></div><div class="torso"></div><div class="pack"></div><div class="legs"><div class="leg"></div><div class="leg r"></div></div></div>
+        <div class="walker st4"><div class="head"></div><div class="torso"></div><div class="pack"></div><div class="legs"><div class="leg"></div><div class="leg r"></div></div></div>
+        <div class="grass"></div>
+    </div>
+
+    <div class="page">
+        <header class="banner">
+            <div>
+                <h1>dharshan-vasp</h1>
+                <p id="subtitle">School voice assistant — English, Tamil, Hindi</p>
+            </div>
+            <span class="tag">School Project</span>
+        </header>
+
+        <div class="toolbar">
+            <div class="langs" role="group" aria-label="Language">
+                <button type="button" data-lang="en" aria-pressed="true">English</button>
+                <button type="button" data-lang="ta" aria-pressed="false">தமிழ்</button>
+                <button type="button" data-lang="hi" aria-pressed="false">हिन्दी</button>
+            </div>
+            <div class="mic-badge" id="micBadge" data-mic="prompt">
+                <span class="mic-dot"></span>
+                <span id="micBadgeText">Microphone</span>
+            </div>
+        </div>
+
+        <section class="stage" id="stage" data-state="idle">
+            <div class="robot-wrap">
+                <svg class="robot" id="robot" viewBox="0 0 120 140" aria-label="Animated robot">
+                    <g class="antenna">
+                        <rect x="57" y="8" width="6" height="18" rx="3" fill="#64748b"/>
+                        <circle cx="60" cy="8" r="7" fill="#f59e0b"/>
+                    </g>
+                    <g class="arm-l">
+                        <rect x="10" y="70" width="18" height="10" rx="5" fill="#60a5fa"/>
+                        <circle cx="12" cy="75" r="8" fill="#fbbf24"/>
+                    </g>
+                    <g class="arm-r">
+                        <rect x="92" y="70" width="18" height="10" rx="5" fill="#60a5fa"/>
+                        <circle cx="108" cy="75" r="8" fill="#fbbf24"/>
+                    </g>
+                    <rect x="28" y="86" width="16" height="28" rx="6" fill="#1d4ed8"/>
+                    <rect x="76" y="86" width="16" height="28" rx="6" fill="#1d4ed8"/>
+                    <rect x="32" y="32" width="56" height="58" rx="16" fill="#3b82f6"/>
+                    <rect x="40" y="42" width="40" height="28" rx="10" fill="#eff6ff"/>
+                    <circle cx="52" cy="56" r="5" fill="#1e3a8a"/>
+                    <circle cx="68" cy="56" r="5" fill="#1e3a8a"/>
+                    <rect class="lid" x="44" y="48" width="32" height="6" rx="3" fill="#93c5fd" opacity="0.01"/>
+                    <rect class="mouth" x="50" y="74" width="20" height="8" rx="4" fill="#1e3a8a"/>
+                    <circle cx="60" cy="28" r="6" fill="#22d3ee"/>
+                </svg>
+            </div>
+            <button class="mic-btn" id="btnListen" type="button" aria-label="Start listening">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 3a3.2 3.2 0 0 0-3.2 3.2v6.6a3.2 3.2 0 1 0 6.4 0V6.2A3.2 3.2 0 0 0 12 3Z" fill="currentColor"/>
+                    <path d="M5.5 11.2a6.5 6.5 0 0 0 13 0M12 17.7V21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <div class="status" id="status">Ready</div>
+            <p class="hint" id="hint"></p>
+            <div class="controls">
+                <button class="stop" id="btnStop" type="button" disabled></button>
+                <button id="btnClear" type="button"></button>
+            </div>
+            <p class="note-line" id="voiceNote"></p>
+        </section>
+
+        <div class="cards">
+            <article class="bubble">
+                <h2 id="youLabel">You said</h2>
+                <div class="txt" id="youText">—</div>
+            </article>
+            <article class="bubble">
+                <h2 id="botLabel">Assistant replied</h2>
+                <div class="txt" id="botText"></div>
+            </article>
+        </div>
+
+        <form class="type-row" id="typeForm">
+            <input id="typed" type="text" autocomplete="off" maxlength="500">
+            <button type="submit" id="btnSend"></button>
+        </form>
+
+        <div class="chips-wrap">
+            <p id="tryLabel">Try saying</p>
+            <div class="chips" id="chips"></div>
+        </div>
+        <p class="foot" id="foot"></p>
+    </div>
+
+<script>
+(function () {
+    const NAME = "dharshan-vasp";
+    const LANGS = {
+        en: {
+            speech: "en-IN",
+            locale: "en-IN",
+            subtitle: "Tap the mic, speak, and hear a loud reply",
+            hint: "Click the blue microphone. Allow the popup. Then speak.",
+            speakNow: "Speak now",
+            idle: "Tap the microphone to talk",
+            listening: "Listening… speak clearly",
+            thinking: "Working out the answer…",
+            speaking: NAME + " is speaking…",
+            requesting: "Allow microphone in the browser popup",
+            listenCue: "I am listening. Please speak.",
+            stop: "Stop",
+            clear: "Clear",
+            send: "Send",
+            you: "You said",
+            bot: NAME + " replied",
+            greeting: "Hello. I am " + NAME + ". How can I help you?",
+            placeholder: "Backup: type here if voice fails",
+            tryLabel: "Try saying",
+            chips: ["Hello", "What is the time?", "What is today's date?", "Open YouTube", "Math add 10 and 20", "Who are you?"],
+            micNeeded: "Microphone not enabled yet",
+            micGranted: "Microphone allowed",
+            micDenied: "Microphone blocked",
+            micListening: "Hearing you",
+            micMissing: "Open this page in Google Chrome.",
+            micBlocked: "Microphone blocked. Click the padlock → Microphone → Allow.",
+            micError: "Could not start the microphone. Close Zoom/Meet, then try Chrome again.",
+            network: "Chrome speech needs internet. Connect Wi-Fi and try again.",
+            audioCapture: "Windows is not giving Chrome the microphone.",
+            noSpeech: "I did not catch words yet. Speak again.",
+            speakLouder: "No words yet. Speak a little louder, in the selected language.",
+            hearing: "Heard something… keep speaking.",
+            noVoice: "Using the loudest available computer voice.",
+            foot: "Use Google Chrome. Turn computer volume up. Select the language, then speak in that language.",
+            who: "I am " + NAME + ", a school talking robot. I can tell the time, open YouTube or Google, do maths, and talk in English, Tamil, and Hindi.",
+            canDo: "Ask the time or date, say open YouTube, do maths, or just talk to me.",
+            opened: (name) => "Opening " + name + ".",
+            searching: (q) => "Searching for " + q + ".",
+            hello: "Hello. How can I help you?",
+            thanks: "You are welcome.",
+            bye: "Goodbye.",
+            morning: "Good morning.",
+            night: "Good night.",
+            love: "Thank you. I am here to help.",
+            ate: "I do not eat. I run on electricity.",
+        },
+        ta: {
+            speech: "ta-IN",
+            locale: "ta-IN",
+            subtitle: "மைக்கை அழுத்தி பேசுங்கள் — பதில் உரக்க வரும்",
+            hint: "நீல மைக்கை அழுத்துங்கள். Allow அழுத்தி, தமிழில் பேசுங்கள்.",
+            speakNow: "இப்போது பேசுங்கள்",
+            idle: "பேச மைக்கை அழுத்துங்கள்",
+            listening: "கேட்டுக்கொண்டிருக்கிறேன்… தெளிவாக பேசுங்கள்",
+            thinking: "பதில் தயாராகிறது…",
+            speaking: NAME + " பேசுகிறது…",
+            requesting: "உலாவியில் மைக்கை Allow செய்யவும்",
+            listenCue: "நான் கேட்டுக்கொண்டிருக்கிறேன். பேசுங்கள்.",
+            stop: "நிறுத்து",
+            clear: "அழி",
+            send: "அனுப்பு",
+            you: "நீங்கள் சொன்னது",
+            bot: NAME + " பதில்",
+            greeting: "வணக்கம். நான் " + NAME + ". உங்களுக்கு எப்படி உதவட்டும்?",
+            placeholder: "குரல் பிடிக்கவில்லை என்றால் இங்கே எழுதுங்கள்",
+            tryLabel: "இப்படி சொல்லுங்கள்",
+            chips: ["வணக்கம்", "நேரம் என்ன?", "இன்றைய தேதி என்ன?", "YouTube திற", "10 கூட்டு 20", "நீ யார்?"],
+            micNeeded: "மைக் இன்னும் அனுமதிக்கவில்லை",
+            micGranted: "மைக் அனுமதிக்கப்பட்டது",
+            micDenied: "மைக் தடுக்கப்பட்டது",
+            micListening: "உங்களை கேட்கிறேன்",
+            micMissing: "Google Chrome-ல் திறக்கவும்.",
+            micBlocked: "மைக் தடுக்கப்பட்டுள்ளது. பூட்டு → Microphone → Allow.",
+            micError: "மைக் தொடங்கவில்லை.",
+            network: "குரல் அங்கீகாரத்திற்கு இணையம் தேவை.",
+            audioCapture: "Windows மைக்கை Chrome-க்கு கொடுக்கவில்லை.",
+            noSpeech: "வார்த்தைகள் கிடைக்கவில்லை. மீண்டும் பேசுங்கள்.",
+            speakLouder: "இன்னும் வார்த்தை இல்லை. உரக்க, தமிழில் பேசுங்கள்.",
+            hearing: "கேட்கிறது… தொடர்ந்து பேசுங்கள்.",
+            noVoice: "கணினியில் உள்ள உரத்த குரலை பயன்படுத்துகிறேன்.",
+            foot: "Chrome பயன்படுத்துங்கள். ஸ்பீக்கர் ஒலியை உயர்த்துங்கள்.",
+            who: "நான் " + NAME + ". நேரம், YouTube, கணக்கு, உரையாடல்.",
+            canDo: "நேரம், தேதி, YouTube, கணக்கு அல்லது பேச்சு.",
+            opened: (name) => name + " திறக்கிறேன்.",
+            searching: (q) => q + " தேடுகிறேன்.",
+            hello: "வணக்கம். எப்படி உதவட்டும்?",
+            thanks: "வரவேற்கிறேன்.",
+            bye: "பிறகு பார்க்கலாம்.",
+            morning: "காலை வணக்கம்.",
+            night: "இரவு வணக்கம்.",
+            love: "நன்றி.",
+            ate: "எனக்கு உணவு வேண்டாம்.",
+        },
+        hi: {
+            speech: "hi-IN",
+            locale: "hi-IN",
+            subtitle: "माइक दबाएँ, बोलें, ज़ोर से जवाब सुनें",
+            hint: "नीला माइक दबाएँ। Allow चुनें। हिंदी में बोलें.",
+            speakNow: "अब बोलें",
+            idle: "बात करने के लिए माइक दबाएँ",
+            listening: "सुन रहा हूँ… साफ़ बोलें",
+            thinking: "जवाब तैयार हो रहा है…",
+            speaking: NAME + " बोल रहा है…",
+            requesting: "ब्राउज़र पॉपअप में Allow दबाएँ",
+            listenCue: "मैं सुन रहा हूँ। बोलिए.",
+            stop: "रोकें",
+            clear: "साफ़ करें",
+            send: "भेजें",
+            you: "आपने कहा",
+            bot: NAME + " का जवाब",
+            greeting: "नमस्ते। मैं " + NAME + " हूँ। मैं आपकी कैसे मदद करूँ?",
+            placeholder: "आवाज़ न चले तो यहाँ लिखें",
+            tryLabel: "ऐसा कहें",
+            chips: ["नमस्ते", "समय क्या है?", "आज की तारीख?", "YouTube खोलो", "10 जोड़ 20", "तुम कौन हो?"],
+            micNeeded: "माइक अभी अनुमति नहीं",
+            micGranted: "माइक अनुमति मिली",
+            micDenied: "माइक बंद है",
+            micListening: "आपको सुन रहा हूँ",
+            micMissing: "Google Chrome में खोलें.",
+            micBlocked: "माइक ब्लॉक है। ताला → Microphone Allow.",
+            micError: "माइक शुरू नहीं हुआ।",
+            network: "आवाज़ पहचान के लिए इंटरनेट चाहिए.",
+            audioCapture: "Windows Chrome को माइक नहीं दे रहा.",
+            noSpeech: "शब्द नहीं मिले। फिर बोलें.",
+            speakLouder: "अभी शब्द नहीं आए। ज़ोर से हिंदी में बोलें.",
+            hearing: "सुनाई दे रहा है… बोलते रहें.",
+            noVoice: "सबसे तेज़ उपलब्ध आवाज़ इस्तेमाल हो रही है.",
+            foot: "Chrome इस्तेमाल करें। स्पीकर आवाज़ बढ़ाएँ.",
+            who: "मैं " + NAME + " हूँ। समय, YouTube, गणित, बातचीत।",
+            canDo: "समय, तारीख, YouTube, गणित, या बातचीत।",
+            opened: (name) => name + " खोल रहा हूँ।",
+            searching: (q) => q + " खोज रहा हूँ।",
+            hello: "नमस्ते। मैं कैसे मदद करूँ?",
+            thanks: "आपका स्वागत है।",
+            bye: "अलविदा।",
+            morning: "सुप्रभात।",
+            night: "शुभ रात्रि।",
+            love: "धन्यवाद।",
+            ate: "मुझे खाने की ज़रूरत नहीं।",
+        },
+    };
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const els = {
+        stage: document.getElementById("stage"),
+        status: document.getElementById("status"),
+        hint: document.getElementById("hint"),
+        subtitle: document.getElementById("subtitle"),
+        btnListen: document.getElementById("btnListen"),
+        btnStop: document.getElementById("btnStop"),
+        btnClear: document.getElementById("btnClear"),
+        btnSend: document.getElementById("btnSend"),
+        youLabel: document.getElementById("youLabel"),
+        botLabel: document.getElementById("botLabel"),
+        youText: document.getElementById("youText"),
+        botText: document.getElementById("botText"),
+        typed: document.getElementById("typed"),
+        tryLabel: document.getElementById("tryLabel"),
+        chips: document.getElementById("chips"),
+        voiceNote: document.getElementById("voiceNote"),
+        typeForm: document.getElementById("typeForm"),
+        micBadge: document.getElementById("micBadge"),
+        micBadgeText: document.getElementById("micBadgeText"),
+        foot: document.getElementById("foot"),
+        robot: document.getElementById("robot"),
+    };
+
+    let lang = localStorage.getItem("dharshan-lang") || "en";
+    if (!LANGS[lang]) lang = "en";
+    let mode = "idle";
+    let rec = null;
+    let restartTimer = 0;
+    let heardTimer = 0;
+    let permissionReady = false;
+    let turn = 0;
+    let voicesReady = false;
+    let currentAudio = null;
+
+    function stopSpeech() {
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+        if (currentAudio) {
+            currentAudio.onended = null;
+            currentAudio.onerror = null;
+            currentAudio.pause();
+            currentAudio.src = "";
+            currentAudio = null;
+        }
+        els.robot.classList.remove("talking");
+    }
+
+    function t() { return LANGS[lang]; }
+
+    function setMicUI(state) {
+        els.micBadge.dataset.mic = state;
+        const map = { granted: t().micGranted, prompt: t().micNeeded, denied: t().micDenied, listening: t().micListening };
+        els.micBadgeText.textContent = map[state] || t().micNeeded;
+    }
+
+    function setState(state, label) {
+        els.stage.dataset.state = state;
+        els.status.textContent = label == null ? t()[state] || t().idle : label;
+        els.btnStop.disabled = mode !== "listen" && state !== "speaking" && state !== "requesting";
+        els.btnListen.disabled = state === "requesting" || state === "thinking";
+        els.robot.classList.toggle("talking", state === "speaking");
+        if (state === "listening") setMicUI("listening");
+        else if (permissionReady) setMicUI("granted");
+    }
+
+    function setYou(text) { els.youText.textContent = text || "—"; }
+
+    function setBot(text, url) {
+        els.botText.replaceChildren();
+        const span = document.createElement("span");
+        span.textContent = text;
+        els.botText.appendChild(span);
+        if (url && /^https:\/\//.test(url)) {
+            els.botText.appendChild(document.createTextNode(" "));
+            const a = document.createElement("a");
+            a.href = url;
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.textContent = url.replace(/^https:\/\//, "");
+            els.botText.appendChild(a);
+        }
+    }
+
+    function applyLanguage() {
+        const copy = t();
+        document.documentElement.lang = copy.speech;
+        els.subtitle.textContent = copy.subtitle;
+        els.hint.textContent = copy.hint;
+        els.btnStop.textContent = copy.stop;
+        els.btnClear.textContent = copy.clear;
+        els.btnSend.textContent = copy.send;
+        els.youLabel.textContent = copy.you;
+        els.botLabel.textContent = copy.bot;
+        els.typed.placeholder = copy.placeholder;
+        els.tryLabel.textContent = copy.tryLabel;
+        els.foot.textContent = copy.foot;
+        els.voiceNote.textContent = "";
+        document.querySelectorAll(".langs button").forEach((btn) => {
+            btn.setAttribute("aria-pressed", btn.dataset.lang === lang ? "true" : "false");
+        });
+        els.chips.replaceChildren();
+        copy.chips.forEach((label) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = label;
+            btn.addEventListener("click", () => handleUtterance(label));
+            els.chips.appendChild(btn);
+        });
+        setYou("—");
+        setBot(copy.greeting);
+        if (mode !== "listen") setState("idle");
+        setMicUI(permissionReady ? "granted" : "prompt");
+    }
+
+    function stopRec() {
+        clearTimeout(restartTimer);
+        clearTimeout(heardTimer);
+        if (!rec) return;
+        const current = rec;
+        rec = null;
+        try { current.onend = null; current.onerror = null; current.onresult = null; } catch (e) { /* ignore */ }
+        try { current.abort(); } catch (e) { /* ignore */ }
+    }
+
+    async function ensureMicPermission() {
+        if (permissionReady) return;
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            setMicUI("denied");
+            throw new Error("unsupported");
+        }
+        setState("requesting");
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+        });
+        stream.getTracks().forEach((track) => track.stop());
+        permissionReady = true;
+        setMicUI("granted");
+        await sleep(500);
+    }
+
+    function armHeardWatch(myTurn) {
+        clearTimeout(heardTimer);
+        heardTimer = setTimeout(() => {
+            if (mode === "listen" && turn === myTurn && (els.youText.textContent === "—" || !els.youText.textContent.trim())) {
+                els.voiceNote.textContent = t().speakLouder;
+            }
+        }, 6000);
+    }
+
+    function startRecognizer(myTurn) {
+        if (mode !== "listen" || turn !== myTurn) return;
+        if (!SpeechRecognition) {
+            mode = "idle";
+            setState("error", t().micMissing);
+            return;
+        }
+        const instance = new SpeechRecognition();
+        rec = instance;
+        instance.lang = t().speech;
+        instance.continuous = true;
+        instance.interimResults = true;
+        instance.maxAlternatives = 1;
+        instance.onstart = () => {
+            if (mode === "listen" && turn === myTurn) {
+                setState("listening", t().speakNow);
+                armHeardWatch(myTurn);
+            }
+        };
+        instance.onresult = (event) => {
+            if (mode !== "listen" || turn !== myTurn) return;
+            let interim = "";
+            let finalText = "";
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const piece = event.results[i][0].transcript;
+                if (event.results[i].isFinal) finalText += piece;
+                else interim += piece;
+            }
+            const live = (finalText || interim).trim();
+            if (live) {
+                setYou(live);
+                els.voiceNote.textContent = t().hearing;
+                clearTimeout(heardTimer);
+            }
+            if (finalText.trim()) {
+                mode = "busy";
+                stopRec();
+                handleUtterance(finalText.trim());
+            }
+        };
+        instance.onerror = (ev) => {
+            if (turn !== myTurn) return;
+            if (ev.error === "aborted" || ev.error === "no-speech") return;
+            if (ev.error === "not-allowed" || ev.error === "service-not-allowed") {
+                mode = "idle";
+                permissionReady = false;
+                setMicUI("denied");
+                setState("error", t().micBlocked);
+                return;
+            }
+            if (ev.error === "network") {
+                mode = "idle";
+                setState("error", t().network);
+                return;
+            }
+            if (ev.error === "audio-capture") {
+                mode = "idle";
+                setState("error", t().audioCapture);
+            }
+        };
+        instance.onend = () => {
+            if (rec === instance) rec = null;
+            if (mode === "listen" && turn === myTurn) {
+                restartTimer = setTimeout(() => startRecognizer(myTurn), 280);
+            }
+        };
+        try { instance.start(); }
+        catch (err) { restartTimer = setTimeout(() => startRecognizer(myTurn), 400); }
+    }
+
+    function assistantReplyText() {
+        const text = (els.botText.textContent || "").replace(/\s+/g, " ").trim();
+        return text && text !== "—" ? text : t().greeting;
+    }
+
+    async function startListening() {
+        if (mode === "listen") {
+            userStop();
+            return;
+        }
+        stopSpeech();
+        stopRec();
+        mode = "listen";
+        turn += 1;
+        const myTurn = turn;
+        els.voiceNote.textContent = "";
+        setYou("—");
+        try {
+            await ensureMicPermission();
+            if (mode !== "listen" || turn !== myTurn) return;
+            await speak(assistantReplyText());
+            if (mode !== "listen" || turn !== myTurn) return;
+            await sleep(350);
+            startRecognizer(myTurn);
+        } catch (err) {
+            mode = "idle";
+            const denied = err && (err.name === "NotAllowedError" || err.name === "PermissionDeniedError");
+            setMicUI(denied ? "denied" : "prompt");
+            setState("error", denied ? t().micBlocked : t().micError);
+        }
+    }
+
+    function userStop() {
+        turn += 1;
+        mode = "idle";
+        stopRec();
+        stopSpeech();
+        els.voiceNote.textContent = "";
+        setState("idle");
+        if (permissionReady) setMicUI("granted");
+    }
+
+    async function waitForVoices() {
+        if (!window.speechSynthesis) return [];
+        let voices = window.speechSynthesis.getVoices();
+        if (voices.length) {
+            voicesReady = true;
+            return voices;
+        }
+        await new Promise((resolve) => {
+            const done = () => resolve();
+            window.speechSynthesis.addEventListener("voiceschanged", done, { once: true });
+            setTimeout(resolve, 900);
+        });
+        voices = window.speechSynthesis.getVoices();
+        voicesReady = voices.length > 0;
+        return voices;
+    }
+
+    function pickVoice(voices) {
+        const wanted = t().speech.replace("_", "-").toLowerCase();
+        const prefix = wanted.slice(0, 2);
+        const langOf = (v) => (v.lang || "").replace("_", "-").toLowerCase();
+        return (
+            voices.find((v) => langOf(v) === wanted) ||
+            voices.find((v) => langOf(v).startsWith(prefix + "-") || langOf(v) === prefix) ||
+            voices.find((v) => /google|microsoft|heera|ravi|rishi|zira|david/i.test(v.name)) ||
+            voices[0] ||
+            null
+        );
+    }
+
+    function speakWithBrowser(text) {
+        return new Promise(async (resolve) => {
+            if (!("speechSynthesis" in window) || !text) {
+                resolve();
+                return;
+            }
+            const voices = await waitForVoices();
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.volume = 1;
+            utter.rate = lang === "ta" ? 0.72 : 0.84;
+            utter.pitch = 1;
+            utter.lang = t().speech;
+            const voice = pickVoice(voices);
+            const voiceLang = voice ? (voice.lang || "").toLowerCase() : "";
+            if (voice && (lang === "en" || voiceLang.startsWith(lang))) {
+                utter.voice = voice;
+            }
+            const keepAlive = setInterval(() => {
+                try { window.speechSynthesis.resume(); } catch (e) { /* ignore */ }
+            }, 200);
+            const finish = () => {
+                clearInterval(keepAlive);
+                resolve();
+            };
+            utter.onend = finish;
+            utter.onerror = finish;
+            window.speechSynthesis.resume();
+            window.speechSynthesis.speak(utter);
+        });
+    }
+
+    function speakWithServer(text) {
+        return new Promise(async (resolve, reject) => {
+            const res = await fetch("/speak", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: text, language: lang }),
+            });
+            if (!res.ok) {
+                reject(new Error("tts"));
+                return;
+            }
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const audio = new Audio(url);
+            currentAudio = audio;
+            audio.volume = 1;
+            audio.onended = () => {
+                URL.revokeObjectURL(url);
+                if (currentAudio === audio) currentAudio = null;
+                resolve();
+            };
+            audio.onerror = () => {
+                URL.revokeObjectURL(url);
+                if (currentAudio === audio) currentAudio = null;
+                reject(new Error("play"));
+            };
+            try {
+                await audio.play();
+            } catch (err) {
+                URL.revokeObjectURL(url);
+                if (currentAudio === audio) currentAudio = null;
+                reject(err);
+            }
+        });
+    }
+
+    function speak(text, opts) {
+        opts = opts || {};
+        return (async () => {
+            const cleaned = String(text || "").replace(/\s+/g, " ").trim();
+            if (!cleaned) return;
+            stopSpeech();
+            if (!opts.cue) setState("speaking");
+            els.robot.classList.add("talking");
+            try {
+                await speakWithServer(cleaned);
+            } catch (err) {
+                await speakWithBrowser(cleaned);
+            } finally {
+                els.robot.classList.remove("talking");
+            }
+        })();
+    }
+
+    function openUrl(url) {
+        return Boolean(window.open(url, "_blank", "noopener,noreferrer"));
+    }
+
+    function localCommand(raw) {
+        const text = raw.trim();
+        const lower = text.toLowerCase();
+        const copy = t();
+        const timeAsked = /(?:what(?:'s| is) the time|time now|tell me the time|நேரம்|समय क्या|टाइम क्या|क्या समय)/i.test(text) || lower === "time";
+        const dateAsked = /(?:today'?s date|what(?:'s| is) the date|தேதி|तारीख|दिनांक)/i.test(text);
+        if (timeAsked && !dateAsked) {
+            return { reply: new Date().toLocaleTimeString(copy.locale, { hour: "numeric", minute: "2-digit" }) };
+        }
+        if (dateAsked) {
+            return { reply: new Date().toLocaleDateString(copy.locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" }) };
+        }
+        const wantsOpen = /open|திற|खोल/i.test(text);
+        if (wantsOpen && /youtube|யூடியூப்|यूट्यूब/i.test(text)) {
+            const url = "https://www.youtube.com";
+            openUrl(url);
+            return { reply: copy.opened("YouTube"), url };
+        }
+        if (wantsOpen && /google|கூகுள்|गूगल/i.test(text) && !/search|தேடு|खोज/i.test(text)) {
+            const url = "https://www.google.com";
+            openUrl(url);
+            return { reply: copy.opened("Google"), url };
+        }
+        let searchQ = null;
+        const enSearch = lower.match(/^(?:search|google)\s+(.+)/);
+        if (enSearch) searchQ = enSearch[1];
+        const taSearch = text.match(/^(.+?)\s*தேடு\s*$/);
+        if (taSearch) searchQ = taSearch[1];
+        const hiSearch = text.match(/^(.+?)\s*(?:खोजो|खोजें|सर्च करो)\s*$/);
+        if (hiSearch) searchQ = hiSearch[1];
+        if (searchQ) {
+            const url = "https://www.google.com/search?q=" + encodeURIComponent(searchQ);
+            openUrl(url);
+            return { reply: copy.searching(searchQ), url };
+        }
+        if (/(?:who are you|what is your name|நீ யார்|உன் பெயர்|तुम कौन हो|तुम्हारा नाम|आप कौन हो)/i.test(text)) return { reply: copy.who };
+        if (/(?:what can you do|என்ன செய்ய|क्या कर सकते)/i.test(text)) return { reply: copy.canDo };
+        if (/^(?:hello|hi|hey|வணக்கம்|नमस्ते|नमस्कार)\s*[!.]?$/i.test(text)) return { reply: copy.hello };
+        if (/(?:thank you|thanks|நன்றி|धन्यवाद)/i.test(text)) return { reply: copy.thanks };
+        if (/^(?:bye|goodbye|bye bye|போ|விடை|अलविदा|बाय)\s*[!.]?$/i.test(text)) return { reply: copy.bye };
+        if (/(?:good morning|காலை வணக்கம்|सुप्रभात)/i.test(text)) return { reply: copy.morning };
+        if (/(?:good night|இரவு வணக்கம்|शुभ रात्रि)/i.test(text)) return { reply: copy.night };
+        if (/(?:i love you|நான் உன்னை காதலி|मुझे तुमसे प्यार)/i.test(text)) return { reply: copy.love };
+        if (/(?:did you eat|சாப்பிட்டாயா|खाया क्या)/i.test(text)) return { reply: copy.ate };
+        return null;
+    }
+
+    async function handleUtterance(text) {
+        const cleaned = (text || "").trim();
+        if (!cleaned) {
+            if (mode === "busy") {
+                mode = "listen";
+                turn += 1;
+                startRecognizer(turn);
+            }
+            return;
+        }
+        mode = "busy";
+        stopRec();
+        stopSpeech();
+        setYou(cleaned);
+        const local = localCommand(cleaned);
+        let reply = "";
+        let url;
+        if (local) {
+            reply = local.reply;
+            url = local.url;
+        } else {
+            setState("thinking");
+            try {
+                const res = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: cleaned, language: lang }),
+                });
+                const data = await res.json();
+                reply = data.reply || t().noSpeech;
+            } catch (err) {
+                reply = t().noSpeech;
+            }
+        }
+        setBot(reply, url);
+        await speak(reply);
+        await sleep(400);
+        if (mode === "idle") return;
+        mode = "listen";
+        turn += 1;
+        startRecognizer(turn);
+    }
+
+    function clearAll() {
+        userStop();
+        els.typed.value = "";
+        applyLanguage();
+    }
+
+    document.querySelectorAll(".langs button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            lang = btn.dataset.lang;
+            localStorage.setItem("dharshan-lang", lang);
+            userStop();
+            applyLanguage();
+        });
+    });
+
+    els.btnListen.addEventListener("click", startListening);
+    els.btnStop.addEventListener("click", userStop);
+    els.btnClear.addEventListener("click", clearAll);
+    els.typeForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const value = els.typed.value.trim();
+        if (!value) return;
+        els.typed.value = "";
+        handleUtterance(value);
+    });
+
+    if (window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        waitForVoices();
+    }
+
+    if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: "microphone" }).then((status) => {
+            if (status.state === "granted") {
+                permissionReady = true;
+                setMicUI("granted");
+            } else if (status.state === "denied") setMicUI("denied");
+            status.onchange = () => {
+                if (status.state === "granted") {
+                    permissionReady = true;
+                    setMicUI("granted");
+                } else if (status.state === "denied") {
+                    permissionReady = false;
+                    setMicUI("denied");
+                }
+            };
+        }).catch(() => {});
+    }
+
+    applyLanguage();
+})();
+</script>
+</body>
+</html>
