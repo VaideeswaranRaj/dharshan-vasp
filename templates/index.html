@@ -400,6 +400,8 @@
             place-items: center;
             box-shadow: 0 10px 24px rgba(37, 99, 235, 0.38);
             margin-top: 4px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
         .mic-btn svg { width: 38px; height: 38px; }
         .stage[data-state="listening"] .mic-btn {
@@ -477,6 +479,7 @@
             border-radius: 12px;
             padding: 11px 12px;
             font: inherit;
+            font-size: 16px;
         }
         .type-row button {
             border: 0;
@@ -614,12 +617,13 @@
 (function () {
     const NAME = "AIHR";
     const MIC_INTRO = "Artificial intelligence helping robot";
+    const isMobile = /Android|iPhone|iPad|iPod|webOS|Mobi/i.test(navigator.userAgent || "");
     const LANGS = {
         en: {
             speech: "en-IN",
             locale: "en-IN",
             subtitle: "Artificial Intelligence Helping Robot — tap the mic to hear me",
-            hint: "Click the blue microphone. Allow the popup. Then speak.",
+            hint: "Tap the blue microphone. Allow the mic. Wait for Speak now, then talk clearly and pause when finished.",
             speakNow: "Speak now",
             idle: "Tap the microphone to talk",
             listening: "Listening… speak clearly",
@@ -640,16 +644,16 @@
             micGranted: "Microphone allowed",
             micDenied: "Microphone blocked",
             micListening: "Hearing you",
-            micMissing: "Open this page in Google Chrome.",
+            micMissing: "Voice listening needs Google Chrome on Android. On iPhone, type your question below.",
             micBlocked: "Microphone blocked. Click the padlock → Microphone → Allow.",
             micError: "Could not start the microphone. Close Zoom/Meet, then try Chrome again.",
             network: "Chrome speech needs internet. Connect Wi-Fi and try again.",
-            audioCapture: "Windows is not giving Chrome the microphone.",
+            audioCapture: "Chrome could not use the microphone. Close WhatsApp, Meet, or other mic apps, then try again.",
             noSpeech: "I did not catch words yet. Speak again.",
-            speakLouder: "No words yet. Speak a little louder, in the selected language.",
+            speakLouder: "No words yet. After Speak now, talk a little louder in the selected language.",
             hearing: "Heard something… keep speaking.",
             noVoice: "Using the loudest available computer voice.",
-            foot: "Use Google Chrome. Turn computer volume up. Select the language, then speak in that language.",
+            foot: "Use Chrome with internet. After the robot talks, wait for Speak now, then speak in the selected language.",
             who: "I am " + NAME + ", Artificial Intelligence Helping Robot. I can tell the time, open YouTube or Google, do maths, and talk in English, Tamil, and Hindi.",
             canDo: "Ask the time or date, say open YouTube, do maths, or just talk to me.",
             opened: (name) => "Opening " + name + ".",
@@ -666,7 +670,7 @@
             speech: "ta-IN",
             locale: "ta-IN",
             subtitle: "மைக்கை அழுத்தி பேசுங்கள் — பதில் உரக்க வரும்",
-            hint: "நீல மைக்கை அழுத்துங்கள். Allow அழுத்தி, தமிழில் பேசுங்கள்.",
+            hint: "நீல மைக்கை அழுத்துங்கள். Allow அழுத்தவும். Speak now தெரிந்ததும் தமிழில் தெளிவாக பேசுங்கள்.",
             speakNow: "இப்போது பேசுங்கள்",
             idle: "பேச மைக்கை அழுத்துங்கள்",
             listening: "கேட்டுக்கொண்டிருக்கிறேன்… தெளிவாக பேசுங்கள்",
@@ -691,12 +695,12 @@
             micBlocked: "மைக் தடுக்கப்பட்டுள்ளது. பூட்டு → Microphone → Allow.",
             micError: "மைக் தொடங்கவில்லை.",
             network: "குரல் அங்கீகாரத்திற்கு இணையம் தேவை.",
-            audioCapture: "Windows மைக்கை Chrome-க்கு கொடுக்கவில்லை.",
+            audioCapture: "மைக்கை பயன்படுத்த முடியவில்லை. மற்ற மைக் ஆப்ஸை மூடி மீண்டும் முயல்க.",
             noSpeech: "வார்த்தைகள் கிடைக்கவில்லை. மீண்டும் பேசுங்கள்.",
             speakLouder: "இன்னும் வார்த்தை இல்லை. உரக்க, தமிழில் பேசுங்கள்.",
             hearing: "கேட்கிறது… தொடர்ந்து பேசுங்கள்.",
             noVoice: "கணினியில் உள்ள உரத்த குரலை பயன்படுத்துகிறேன்.",
-            foot: "Chrome பயன்படுத்துங்கள். ஸ்பீக்கர் ஒலியை உயர்த்துங்கள்.",
+            foot: "Chrome மற்றும் இணையம் தேவை. Speak now தெரிந்த பிறகு பேசுங்கள்.",
             who: "நான் " + NAME + ", Artificial Intelligence Helping Robot. நேரம், YouTube, கணக்கு, உரையாடல்.",
             canDo: "நேரம், தேதி, YouTube, கணக்கு அல்லது பேச்சு.",
             opened: (name) => name + " திறக்கிறேன்.",
@@ -713,7 +717,7 @@
             speech: "hi-IN",
             locale: "hi-IN",
             subtitle: "माइक दबाएँ, बोलें, ज़ोर से जवाब सुनें",
-            hint: "नीला माइक दबाएँ। Allow चुनें। हिंदी में बोलें.",
+            hint: "नीला माइक दबाएँ। Allow चुनें। Speak now दिखे तब साफ़ बोलें और रुकें.",
             speakNow: "अब बोलें",
             idle: "बात करने के लिए माइक दबाएँ",
             listening: "सुन रहा हूँ… साफ़ बोलें",
@@ -738,12 +742,12 @@
             micBlocked: "माइक ब्लॉक है। ताला → Microphone Allow.",
             micError: "माइक शुरू नहीं हुआ।",
             network: "आवाज़ पहचान के लिए इंटरनेट चाहिए.",
-            audioCapture: "Windows Chrome को माइक नहीं दे रहा.",
+            audioCapture: "माइक इस्तेमाल नहीं हो पाया। दूसरे माइक ऐप बंद करके फिर कोशिश करें.",
             noSpeech: "शब्द नहीं मिले। फिर बोलें.",
             speakLouder: "अभी शब्द नहीं आए। ज़ोर से हिंदी में बोलें.",
             hearing: "सुनाई दे रहा है… बोलते रहें.",
             noVoice: "सबसे तेज़ उपलब्ध आवाज़ इस्तेमाल हो रही है.",
-            foot: "Chrome इस्तेमाल करें। स्पीकर आवाज़ बढ़ाएँ.",
+            foot: "Chrome और इंटरनेट चाहिए। Speak now दिखे उसके बाद बोलें.",
             who: "मैं " + NAME + ", Artificial Intelligence Helping Robot हूँ। समय, YouTube, गणित, बातचीत।",
             canDo: "समय, तारीख, YouTube, गणित, या बातचीत।",
             opened: (name) => name + " खोल रहा हूँ।",
@@ -794,6 +798,10 @@
     let turn = 0;
     let voicesReady = false;
     let currentAudio = null;
+    let recStarting = false;
+    let lastHeard = "";
+    let ignoreHeardUntil = 0;
+    let captureRetries = 0;
 
     function stopSpeech() {
         if (window.speechSynthesis) window.speechSynthesis.cancel();
@@ -877,15 +885,23 @@
     function stopRec() {
         clearTimeout(restartTimer);
         clearTimeout(heardTimer);
+        recStarting = false;
         if (!rec) return;
         const current = rec;
         rec = null;
         try { current.onend = null; current.onerror = null; current.onresult = null; } catch (e) { /* ignore */ }
+        try { current.stop(); } catch (e) { /* ignore */ }
         try { current.abort(); } catch (e) { /* ignore */ }
     }
 
     async function ensureMicPermission() {
         if (permissionReady) return;
+        if (isMobile && SpeechRecognition) {
+            // Mobile Chrome SpeechRecognition asks for the mic itself.
+            // getUserMedia often keeps the audio device busy and listening fails.
+            permissionReady = true;
+            return;
+        }
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             setMicUI("denied");
             throw new Error("unsupported");
@@ -900,17 +916,48 @@
         await sleep(500);
     }
 
+    function playbackGap() {
+        return sleep(isMobile ? 900 : 350);
+    }
+
+    function shouldIgnoreHeard(text) {
+        const raw = String(text || "").replace(/\s+/g, " ").trim();
+        if (!raw) return true;
+        if (Date.now() < ignoreHeardUntil) return true;
+        const n = raw.toLowerCase().replace(/[^a-z]+/g, "");
+        if (!n) return false;
+        return n.includes("artificialintelligence") || n.includes("helpingrobot");
+    }
+
+    function commitHeard(text, myTurn) {
+        const cleaned = String(text || "").replace(/\s+/g, " ").trim();
+        if (!cleaned || shouldIgnoreHeard(cleaned)) return false;
+        if (mode !== "listen" || turn !== myTurn) return false;
+        lastHeard = "";
+        mode = "busy";
+        stopRec();
+        handleUtterance(cleaned);
+        return true;
+    }
+
     function armHeardWatch(myTurn) {
         clearTimeout(heardTimer);
         heardTimer = setTimeout(() => {
             if (mode === "listen" && turn === myTurn && (els.youText.textContent === "—" || !els.youText.textContent.trim())) {
                 els.voiceNote.textContent = t().speakLouder;
             }
-        }, 6000);
+        }, isMobile ? 8000 : 6000);
+    }
+
+    function recognitionLang() {
+        const code = t().speech;
+        if (isMobile && lang === "en") return "en-IN";
+        return code;
     }
 
     function startRecognizer(myTurn) {
         if (mode !== "listen" || turn !== myTurn) return;
+        if (rec || recStarting) return;
         if (!SpeechRecognition) {
             mode = "idle";
             setState("error", t().micMissing);
@@ -918,11 +965,14 @@
         }
         const instance = new SpeechRecognition();
         rec = instance;
-        instance.lang = t().speech;
-        instance.continuous = true;
+        recStarting = true;
+        instance.lang = recognitionLang();
+        instance.continuous = !isMobile;
         instance.interimResults = true;
-        instance.maxAlternatives = 1;
+        instance.maxAlternatives = 3;
         instance.onstart = () => {
+            recStarting = false;
+            captureRetries = 0;
             if (mode === "listen" && turn === myTurn) {
                 setState("listening", t().speakNow);
                 armHeardWatch(myTurn);
@@ -930,28 +980,29 @@
         };
         instance.onresult = (event) => {
             if (mode !== "listen" || turn !== myTurn) return;
-            let interim = "";
-            let finalText = "";
-            for (let i = event.resultIndex; i < event.results.length; i++) {
+            let combined = "";
+            let finals = "";
+            for (let i = 0; i < event.results.length; i++) {
                 const piece = event.results[i][0].transcript;
-                if (event.results[i].isFinal) finalText += piece;
-                else interim += piece;
+                combined += (combined && piece ? " " : "") + piece;
+                if (event.results[i].isFinal) finals += (finals && piece ? " " : "") + piece;
             }
-            const live = (finalText || interim).trim();
-            if (live) {
+            const live = combined.replace(/\s+/g, " ").trim();
+            if (live && !shouldIgnoreHeard(live)) {
+                lastHeard = live;
                 setYou(live);
                 els.voiceNote.textContent = t().hearing;
                 clearTimeout(heardTimer);
             }
-            if (finalText.trim()) {
-                mode = "busy";
-                stopRec();
-                handleUtterance(finalText.trim());
+            if (!isMobile && finals.trim()) {
+                commitHeard(finals.trim(), myTurn);
             }
         };
         instance.onerror = (ev) => {
+            recStarting = false;
             if (turn !== myTurn) return;
-            if (ev.error === "aborted" || ev.error === "no-speech") return;
+            if (ev.error === "aborted") return;
+            if (ev.error === "no-speech") return;
             if (ev.error === "not-allowed" || ev.error === "service-not-allowed") {
                 mode = "idle";
                 permissionReady = false;
@@ -965,18 +1016,27 @@
                 return;
             }
             if (ev.error === "audio-capture") {
+                if (isMobile && mode === "listen" && captureRetries < 3) {
+                    captureRetries += 1;
+                    return;
+                }
                 mode = "idle";
                 setState("error", t().audioCapture);
             }
         };
         instance.onend = () => {
             if (rec === instance) rec = null;
-            if (mode === "listen" && turn === myTurn) {
-                restartTimer = setTimeout(() => startRecognizer(myTurn), 280);
-            }
+            recStarting = false;
+            if (mode !== "listen" || turn !== myTurn) return;
+            if (commitHeard(lastHeard, myTurn)) return;
+            restartTimer = setTimeout(() => startRecognizer(myTurn), isMobile ? 500 : 280);
         };
         try { instance.start(); }
-        catch (err) { restartTimer = setTimeout(() => startRecognizer(myTurn), 400); }
+        catch (err) {
+            recStarting = false;
+            rec = null;
+            restartTimer = setTimeout(() => startRecognizer(myTurn), isMobile ? 600 : 400);
+        }
     }
 
     async function startListening() {
@@ -989,16 +1049,34 @@
         mode = "listen";
         turn += 1;
         const myTurn = turn;
+        lastHeard = "";
+        captureRetries = 0;
         els.voiceNote.textContent = "";
         setYou("—");
-        try {
-            await ensureMicPermission();
+        setBot(MIC_INTRO);
+        const playIntroThenListen = async () => {
             if (mode !== "listen" || turn !== myTurn) return;
-            setBot(MIC_INTRO);
+            ignoreHeardUntil = Date.now() + 20000;
             await speak(MIC_INTRO, { language: "en" });
             if (mode !== "listen" || turn !== myTurn) return;
-            await sleep(350);
-            startRecognizer(myTurn);
+            captureRetries = 0;
+            ignoreHeardUntil = Date.now() + (isMobile ? 800 : 200);
+            await playbackGap();
+            if (mode !== "listen" || turn !== myTurn) return;
+            if (!rec) startRecognizer(myTurn);
+            setState("listening", t().speakNow);
+        };
+        try {
+            if (isMobile && SpeechRecognition) {
+                ignoreHeardUntil = Date.now() + 20000;
+                startRecognizer(myTurn);
+                await playIntroThenListen();
+                return;
+            }
+            await ensureMicPermission();
+            if (mode !== "listen" || turn !== myTurn) return;
+            await playIntroThenListen();
+            if (!rec) startRecognizer(myTurn);
         } catch (err) {
             mode = "idle";
             const denied = err && (err.name === "NotAllowedError" || err.name === "PermissionDeniedError");
@@ -1010,6 +1088,8 @@
     function userStop() {
         turn += 1;
         mode = "idle";
+        lastHeard = "";
+        recStarting = false;
         stopRec();
         stopSpeech();
         els.voiceNote.textContent = "";
@@ -1093,7 +1173,11 @@
             }
             const blob = await res.blob();
             const url = URL.createObjectURL(blob);
-            const audio = new Audio(url);
+            const audio = new Audio();
+            audio.playsInline = true;
+            audio.setAttribute("playsinline", "true");
+            audio.setAttribute("webkit-playsinline", "true");
+            audio.src = url;
             currentAudio = audio;
             audio.volume = 1;
             audio.onended = () => {
@@ -1222,10 +1306,12 @@
         }
         setBot(reply, url);
         await speak(reply);
-        await sleep(400);
+        await playbackGap();
         if (mode === "idle") return;
         mode = "listen";
         turn += 1;
+        lastHeard = "";
+        ignoreHeardUntil = Date.now() + (isMobile ? 700 : 150);
         startRecognizer(turn);
     }
 
